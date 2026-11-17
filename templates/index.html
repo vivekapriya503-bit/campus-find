@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAMPUS-FIND — Smart Lost & Found Management System</title>
+  <meta name="description" content="A hybrid DBMS lost and found platform for university campuses powered by MySQL and MongoDB.">
+  <style>
+    /* ==========================================================================
+       CAMPUS-FIND Design System: Modern University Theme
+       ========================================================================== */
+    :root {
+      --primary: #1e3a8a;          /* Deep Campus Navy */
+      --primary-light: #3b82f6;    /* Vibrant Blue */
+      --primary-dark: #172554;
+      --secondary: #0d9488;        /* Emerald / Teal */
+      --secondary-light: #14b8a6;
+      --accent-orange: #ea580c;    /* Urgency Alert */
+      --accent-amber: #d97706;     /* Possible Match */
+      --accent-purple: #7c3aed;    /* AI Insights */
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --border-focus: #2563eb;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Accessibility Focus Styles */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+    }
+
+    /* Header & Navigation */
+    header.campus-header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: #ffffff;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: #ffffff;
+      color: var(--primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      color: #bfdbfe;
+      font-weight: 500;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-light {
+      background: #ffffff;
+      color: var(--primary);
+      border-color: #ffffff;
+    }
+    .btn-light:hover {
+      background: #eff6ff;
+    }
+
+    .btn-primary {
+      background: var(--primary-light);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: #ffffff;
+    }
+    .btn-secondary:hover {
+      background: var(--secondary-light);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #ffffff;
+    }
+
+    .btn-outline-dark {
+      background: #ffffff;
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+    .btn-outline-dark:hover {
+      background: #f1f5f9;
+    }
+
+    /* Dual Database Status Indicator Bar */
+    .db-status-bar {
+      background: #0f172a;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      padding: 0.35rem 1.5rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .db-status-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .db-pills {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .db-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #1e293b;
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      font-family: monospace;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+    }
+    .status-dot.active { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+    .status-dot.fallback { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+    /* Main Container */
+    main.main-layout {
+      max-width: 1280px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Hero / Notification Banner */
+    .privacy-notice-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid var(--primary-light);
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+      color: #1e40af;
+    }
+    .privacy-notice-banner strong { font-weight: 700; }
+
+    /* Interactive Campus Map & Zone Selector */
+    .campus-zones-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .zone-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+    .zone-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+    .zone-card:hover, .zone-card.selected {
+      background: #eff6ff;
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .zone-card.selected {
+      border-width: 2px;
+      border-color: var(--primary);
+    }
+    .zone-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .zone-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .zone-counts {
+      margin-top: 0.5rem;
+      font-size: 0.7rem;
+      display: flex;
+      gap: 0.5rem;
+      font-weight: 600;
+    }
+    .badge-lost-count { color: #dc2626; }
+    .badge-found-count { color: #16a34a; }
+
+    /* Search & Filter Toolbar */
+    .filter-toolbar {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .search-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .search-input-wrapper {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    .search-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .filter-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .type-toggle-group {
+      display: flex;
+      background: #f1f5f9;
+      padding: 0.2rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .type-toggle-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .type-toggle-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Cards Grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .item-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+    }
+    .card-photo {
+      height: 160px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-photo-placeholder {
+      color: #94a3b8;
+      font-size: 3rem;
+    }
+    .card-type-tag {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-lost { background: #fee2e2; color: #991b1b; }
+    .tag-found { background: #dcfce7; color: #166534; }
+    .tag-urgent {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: #ea580c;
+      color: #ffffff;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      animation: pulseAlert 2s infinite;
+    }
+    @keyframes pulseAlert {
+      0% { opacity: 0.9; }
+      50% { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 0.9; }
+    }
+    .card-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.5rem;
+    }
+    .card-category {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    .card-meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: #475569;
+      background: #f8fafc;
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+      margin-top: auto;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .card-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-open { background: #e0f2fe; color: #0369a1; }
+    .badge-possible_match { background: #fef3c7; color: #b45309; }
+    .badge-claimed { background: #ede9fe; color: #6d28d9; }
+    .badge-returned { background: #dcfce7; color: #15803d; }
+    .badge-closed { background: #f1f5f9; color: #64748b; }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      font-size: 1.25rem;
+      color: var(--text-main);
+    }
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .btn-close:hover { color: var(--text-main); }
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Forms */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* AI Match Box */
+    .match-card {
+      background: #fdf4ff;
+      border: 1px solid #f0abfc;
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .confidence-pill {
+      background: var(--accent-purple);
+      color: #ffffff;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .match-explanation {
+      font-size: 0.85rem;
+      color: #581c87;
+      line-height: 1.4;
+    }
+
+    /* Secret Privacy Box */
+    .privacy-secret-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid var(--accent-amber);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: #92400e;
+    }
+
+    /* Moderator Queue & Tables */
+    .claims-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+    }
+    .claims-table th, .claims-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .claims-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Toasts */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 2000;
+    }
+    .toast {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideInToast 0.3s ease;
+    }
+    .toast.success { background: #15803d; }
+    .toast.error { background: #b91c1c; }
+    .toast.warning { background: #b45309; }
+    @keyframes slideInToast {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Notification Drawer */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -360px;
+      width: 350px;
+      height: 100%;
+      background: #ffffff;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+      z-index: 1050;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer.open { right: 0; }
+    .drawer-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+    .drawer-body {
+      padding: 1rem;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .notif-item {
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      font-size: 0.85rem;
+    }
+    .notif-item.unread {
+      border-left: 3px solid var(--primary-light);
+      background: #eff6ff;
+    }
+    .notif-title {
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.2rem;
+    }
+    .notif-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="campus-header" role="banner">
+    <div class="header-container">
+      <a href="/" class="brand-group" aria-label="CAMPUS-FIND Home">
+        <div class="brand-logo" aria-hidden="true">CF</div>
+        <div class="brand-text">
+          <h1>CAMPUS-FIND</h1>
+          <p>Smart Lost & Found Management System</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <button class="btn btn-light" onclick="openReportModal('lost')" aria-label="Report a lost item">
+          <span>🔍</span> Report Lost Item
+        </button>
+        <button class="btn btn-secondary" onclick="openReportModal('found')" aria-label="Report a found item">
+          <span>📦</span> Report Found Item
+        </button>
+        <button class="btn btn-outline" id="nav-btn-mod" onclick="openModeratorModal()" aria-label="Open Moderator Dashboard">
+          <span>🛡️</span> Moderator Desk
+        </button>
+        <button class="btn btn-outline" onclick="toggleNotifications()" aria-label="Toggle notifications drawer">
+          <span>🔔</span> <span id="notif-badge-count" style="background:#ef4444; padding:0.1rem 0.4rem; border-radius:9999px; font-size:0.75rem;">0</span>
+        </button>
+        <div id="auth-nav-container" style="display:inline-flex; align-items:center;">
+          <button class="btn btn-outline" onclick="openAuthModal('login')">
+            <span>🔑</span> Sign In
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Dual Database Status Bar -->
+  <aside class="db-status-bar" aria-label="Database engine diagnostics">
+    <div class="db-status-inner">
+      <div class="db-pills">
+        <span>DBMS Engine:</span>
+        <div class="db-pill" id="mysql-pill">
+          <span class="status-dot active"></span>
+          <span>MySQL (Relational/ACID): Checking...</span>
+        </div>
+        <div class="db-pill" id="mongo-pill">
+          <span class="status-dot active"></span>
+          <span>MongoDB (Flexible Reports): Checking...</span>
+        </div>
+      </div>
+      <div>
+        <button onclick="reseedDemoData()" class="btn-outline-dark" style="font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; cursor:pointer;">
+          ↻ Reset Demo Data
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <main class="main-layout" role="main">
+
+    <!-- Privacy & Safe Handoff Banner -->
+    <section class="privacy-notice-banner" aria-label="Privacy and verification policy">
+      <div>
+        <strong>Safe Campus Handoff Policy:</strong> Personal contact info is never shared publicly. Claimants provide a hidden identifying detail (such as a scratch, serial, or sticker) verified exclusively by campus safety moderators.
+      </div>
+      <button class="btn btn-outline-dark" onclick="openPrivacyInfo()" style="padding:0.3rem 0.6rem; font-size:0.75rem;">
+        Privacy Controls & FAQ
+      </button>
+    </section>
+
+    <!-- Campus Zone Selector & Approximate Location Map -->
+    <section class="campus-zones-section" aria-label="Interactive campus zones">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>🗺️</span> Campus Location Zones — "Found Near Me"
+        </h2>
+        <span style="font-size:0.8rem; color:var(--text-muted);">
+          Select a zone to filter reports nearby
+        </span>
+      </div>
+      <div class="zone-grid" id="zone-grid">
+        <!-- Dynamically rendered zone cards with approximate counts -->
+        <div class="zone-card" onclick="selectZone('all')">
+          <div class="zone-name">🌐 All Campus Zones</div>
+          <div class="zone-desc">Show reports across entire campus grounds</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search & Filter Controls -->
+    <section class="filter-toolbar" aria-label="Report search and filters">
+      <div class="search-row">
+        <div class="search-input-wrapper">
+          <span class="search-icon" aria-hidden="true">🔎</span>
+          <input type="text" id="search-input" class="search-input" 
+                 placeholder="Search by keywords (e.g. 'blue water bottle library', 'Apple iPad', 'dorm keys')..." 
+                 oninput="handleSearchDebounce()" aria-label="Search items">
+        </div>
+
+        <div class="type-toggle-group" role="group" aria-label="Report type filter">
+          <button class="type-toggle-btn active" id="btn-type-all" onclick="setReportType('all')">All Reports</button>
+          <button class="type-toggle-btn" id="btn-type-lost" onclick="setReportType('lost')">Lost Items</button>
+          <button class="type-toggle-btn" id="btn-type-found" onclick="setReportType('found')">Found Items</button>
+        </div>
+      </div>
+
+      <div class="filter-pills-row">
+        <label for="filter-category" style="font-size:0.8rem; font-weight:600;">Category:</label>
+        <select id="filter-category" class="filter-select" onchange="loadReports()">
+          <option value="all">All Categories</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Wallets & IDs">Wallets & IDs</option>
+          <option value="Keys & Bags">Keys & Bags</option>
+          <option value="Books & Notes">Books & Notes</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Valuables">Valuables</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label for="filter-status" style="font-size:0.8rem; font-weight:600;">Status:</label>
+        <select id="filter-status" class="filter-select" onchange="loadReports()">
+          <option value="all">All Active Statuses</option>
+          <option value="open">Open</option>
+          <option value="possible_match">Possible Match</option>
+          <option value="claimed">Claimed</option>
+          <option value="returned">Returned</option>
+        </select>
+
+        <label style="display:inline-flex; align-items:center; gap:0.35rem; font-size:0.8rem; font-weight:600; cursor:pointer;">
+          <input type="checkbox" id="filter-urgent" onchange="loadReports()">
+          <span>⚡ Urgent / Time-Sensitive Only</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Item Cards Grid -->
+    <section>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-size:1.15rem; font-weight:700;">
+          Campus Reports (<span id="results-count">0</span> items)
+        </h2>
+        <span style="font-size:0.8rem; color:var(--text-muted);" id="active-zone-label">Zone: All Campus</span>
+      </div>
+
+      <div class="items-grid" id="items-grid" role="region" aria-live="polite">
+        <!-- Dynamically rendered item cards -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- Item Detail & Possible Matches Modal -->
+  <div class="modal-backdrop" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-detail-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-detail-title">Item Details</h3>
+        <button class="btn-close" onclick="closeModal('detail-modal')" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-detail-body">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Lost / Found Item Modal -->
+  <div class="modal-backdrop" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="modal-report-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-report-title">Submit Campus Report</h3>
+        <button class="btn-close" onclick="closeModal('report-modal')" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="report-form" onsubmit="handleReportSubmit(event)">
+          <input type="hidden" id="report-form-type" value="lost">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-title">Item Name *</label>
+              <input type="text" id="form-title" required placeholder="e.g. Navy Blue Hydro Flask">
+            </div>
+            <div class="form-group">
+              <label for="form-category">Category *</label>
+              <select id="form-category" required>
+                <option value="Electronics">Electronics</option>
+                <option value="Wallets & IDs">Wallets & IDs</option>
+                <option value="Keys & Bags">Keys & Bags</option>
+                <option value="Books & Notes">Books & Notes</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Valuables">Valuables</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-color">Color</label>
+              <input type="text" id="form-color" placeholder="e.g. Space Gray, Navy, Tortoiseshell">
+            </div>
+            <div class="form-group">
+              <label for="form-brand">Brand / Model</label>
+              <input type="text" id="form-brand" placeholder="e.g. Apple, Hydro Flask, Warby Parker">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-zone">Campus Zone *</label>
+              <select id="form-zone" required>
+                <option value="Central Library">Central Library</option>
+                <option value="Student Center">Student Center & Union</option>
+                <option value="Science Complex">Science Complex</option>
+                <option value="South Residence">South Residence</option>
+                <option value="North Quad">North Quad</option>
+                <option value="Sports Arena">Sports & Recreation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="form-building">Building / Room</label>
+              <input type="text" id="form-building" placeholder="e.g. 3rd Floor Silent Stacks Table 14">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-date">Incident Date *</label>
+              <input type="date" id="form-date" required>
+            </div>
+            <div class="form-group">
+              <label for="form-image">Photo URL (Optional)</label>
+              <input type="url" id="form-image" placeholder="https://example.com/item.jpg">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="form-desc">Public Description *</label>
+            <textarea id="form-desc" rows="3" required placeholder="Describe where you last had it, general appearance..."></textarea>
+          </div>
+
+          <!-- Private Secret Verification Attribute -->
+          <div class="privacy-secret-box">
+            <strong>🔒 Private Distinguishing Detail (Kept Secret):</strong>
+            <p style="margin-top:0.25rem; font-size:0.8rem;">
+              Provide a private mark (e.g. scratch, inner engraving, sticker, lockscreen photo). This is NEVER shown on public listings and is used by campus staff to verify rightful ownership.
+            </p>
+            <div class="form-group" style="margin-top:0.5rem;">
+              <input type="text" id="form-secret" placeholder="e.g. Small V-shaped scratch near the charging port">
+            </div>
+          </div>
+
+          <!-- Urgency Check -->
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              <input type="checkbox" id="form-urgent">
+              <span><strong>Mark as Urgent / Time-Sensitive</strong> (e.g. dorm keys, prescription glasses, exam notes, perishables)</span>
+            </label>
+            <input type="text" id="form-urgent-reason" placeholder="Why is this urgent? (e.g. Needed for 4 PM exam)" style="display:none; margin-top:0.35rem;">
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+            <button type="button" class="btn btn-outline-dark" onclick="closeModal('report-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-report">Publish Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Private Claim Modal -->
+  <div class="modal-backdrop" id="claim-modal" role="dialog" aria-modal="true" aria-labelledby="modal-claim-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-claim-title">Submit Private Ownership Claim</h3>
+        <button class="btn-close" onclick="closeModal('claim-modal')" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="claim-item-uuid">
+        <p id="claim-item-context" style="font-weight:600; color:var(--primary);"></p>
+
+        <div class="privacy-secret-box">
+          <strong>Campus Privacy & Anti-Fraud Boundary:</strong>
+          <p style="font-size:0.8rem; margin-top:0.35rem;">
+            To prevent fraud, you must provide the private detail or distinguishing mark matching this item. Your submission will be routed directly to the Campus Safety Moderator queue for human review.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="claim-secret-input">Your Secret Identifying Detail *</label>
+          <textarea id="claim-secret-input" rows="3" required 
+                    placeholder="Describe specific scratches, stickers, serial numbers, keychain charms, or lockscreen images..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem;">
+          <button type="button" class="btn btn-outline-dark" onclick="closeModal('claim-modal')">Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="submitClaim()">Submit Claim for Review</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Moderator Desk Modal -->
+  <div class="modal-backdrop" id="moderator-modal" role="dialog" aria-modal="true" aria-labelledby="modal-mod-title">
+    <div class="modal-content" style="max-width:850px;">
+      <div class="modal-header">
+        <h3 id="modal-mod-title">Campus Safety & Moderator Desk</h3>
+        <button class="btn-close" onclick="closeModal('moderator-modal')" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Handoff Verification Tool -->
+        <div style="background:#f1f5f9; padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+          <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;">
+            Safe Desk Return: Redeem 6-Character Handoff Token
+          </h4>
+          <div style="display:flex; gap:0.5rem;">
+            <input type="text" id="verify-token-input" placeholder="e.g. CF-7A9B2C" 
+                   style="flex:1; text-transform:uppercase; font-family:monospace; font-weight:700; font-size:1.1rem; padding:0.5rem;">
+            <button class="btn btn-primary" onclick="verifyDeskHandoff()">Confirm Physical Return</button>
+          </div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">
+            When student presents their one-time code and student ID, enter code to record return in MySQL & update MongoDB report status.
+          </p>
+        </div>
+
+        <!-- Claims Review Queue -->
+        <div>
+          <h4 style="font-size:0.95rem; font-weight:700; margin-top:1rem; margin-bottom:0.5rem;">
+            Claims Queue Awaiting Human Review (MySQL JOIN Demonstration)
+          </h4>
+          <div id="mod-claims-container" style="overflow-x:auto;">
+            <!-- Dynamically populated table -->
+          </div>
+        </div>
+
+        <!-- Unclaimed Items Aging Review -->
+        <div>
+          <h4 style="font-size:0.95rem; font-weight:700; margin-top:1.25rem; margin-bottom:0.5rem;">
+            Unclaimed Reports Aging Alert (&gt;30 Days Policy Reminder)
+          </h4>
+          <div id="aging-reports-container" style="font-size:0.85rem; color:var(--text-muted);">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Controls & Architecture Info Modal -->
+  <div class="modal-backdrop" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="modal-privacy-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-privacy-title">Privacy Controls & Hybrid DBMS Architecture</h3>
+        <button class="btn-close" onclick="closeModal('privacy-modal')">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size:0.9rem; line-height:1.6;">
+        <h4 style="color:var(--primary); font-weight:700;">Public vs. Private Data Boundary</h4>
+        <p>
+          • <strong>Public Listings:</strong> Title, category, approximate zone, general description, and photo metadata.<br>
+          • <strong>Private Claims:</strong> Claimant secret descriptions and personal contact details are stored in MySQL with restricted foreign key access, never sent to public search endpoints or AI prompts.
+        </p>
+
+        <h4 style="color:var(--secondary); font-weight:700; margin-top:1rem;">How MySQL and MongoDB Collaborate</h4>
+        <p>
+          • <strong>MongoDB (Document Store):</strong> Holds flexible, nested item reports (e.g. <code>nested_attributes</code>, <code>location</code>, <code>urgency_info</code>).<br>
+          • <strong>MySQL (Relational ACID):</strong> Holds audit tables (<code>users</code>, <code>claims</code>, <code>match_suggestions</code>, <code>notifications</code>, <code>handoffs</code>) with transactions, snapshots, and foreign keys.<br>
+          • <strong>Bridge:</strong> Connected via stable shared identifier <code>item_uuid</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Login & Registration Modal -->
+  <div class="modal-backdrop" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 id="modal-auth-title">Campus Member Access</h3>
+        <button class="btn-close" onclick="closeModal('auth-modal')" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="gap: 1rem;">
+        <!-- Auth Tabs: Sign In / Register -->
+        <div class="type-toggle-group" style="width: 100%; display: flex; margin-bottom: 0.5rem;">
+          <button type="button" class="type-toggle-btn active" id="tab-btn-login" style="flex:1; padding: 0.5rem;" onclick="switchAuthTab('login')">
+            Sign In
+          </button>
+          <button type="button" class="type-toggle-btn" id="tab-btn-register" style="flex:1; padding: 0.5rem;" onclick="switchAuthTab('register')">
+            Register Student
+          </button>
+        </div>
+
+        <!-- Tab 1: Sign In -->
+        <div id="auth-tab-login">
+          <!-- Quick 1-Click Demo Personas -->
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>⚡ Quick Demo Switch (1-Click Roles):</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+              <button type="button" class="btn btn-outline-dark" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; justify-content: flex-start;" onclick="quickDemoLogin('maya_lin', 'demo123')">
+                👤 Maya Lin (Student)
+              </button>
+              <button type="button" class="btn btn-outline-dark" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; justify-content: flex-start;" onclick="quickDemoLogin('alex_chen', 'demo123')">
+                👤 Alex Chen (Student)
+              </button>
+              <button type="button" class="btn btn-outline-dark" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; justify-content: flex-start; color: #991b1b;" onclick="quickDemoLogin('sarah_safety', 'demo123')">
+                🛡️ Sarah (Moderator)
+              </button>
+              <button type="button" class="btn btn-outline-dark" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; justify-content: flex-start; color: #6b21a8;" onclick="quickDemoLogin('dean_affairs', 'demo123')">
+                🎓 Dr. Reed (Admin)
+              </button>
+            </div>
+          </div>
+
+          <form id="login-form" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="login-username">Campus Username or Email</label>
+              <input type="text" id="login-username" required placeholder="e.g. maya_lin or maya.lin@campus.edu">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required placeholder="••••••••">
+              <span class="form-hint">Seed accounts default password: <code>demo123</code></span>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.65rem;" id="btn-login-submit">
+              Sign In to CAMPUS-FIND
+            </button>
+          </form>
+        </div>
+
+        <!-- Tab 2: Register -->
+        <div id="auth-tab-register" style="display: none;">
+          <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+            <div class="form-group" style="margin-bottom: 0.6rem;">
+              <label for="reg-fullname">Full Name *</label>
+              <input type="text" id="reg-fullname" required placeholder="e.g. Jordan Taylor">
+            </div>
+            <div class="form-row" style="margin-bottom: 0.6rem;">
+              <div class="form-group">
+                <label for="reg-username">Username *</label>
+                <input type="text" id="reg-username" required placeholder="e.g. jordan_t">
+              </div>
+              <div class="form-group">
+                <label for="reg-dept">Department</label>
+                <input type="text" id="reg-dept" placeholder="e.g. Computer Science">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.6rem;">
+              <label for="reg-email">Campus Email *</label>
+              <input type="email" id="reg-email" required placeholder="jordan.t@campus.edu">
+            </div>
+            <div class="form-row" style="margin-bottom: 1rem;">
+              <div class="form-group">
+                <label for="reg-password">Password *</label>
+                <input type="password" id="reg-password" required minlength="6" placeholder="Min. 6 chars">
+              </div>
+              <div class="form-group">
+                <label for="reg-phone">Phone (Masked)</label>
+                <input type="text" id="reg-phone" placeholder="***-***-1234">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 0.65rem;" id="btn-reg-submit">
+              Create Student Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications Drawer -->
+  <div class="drawer" id="notif-drawer" role="complementary" aria-label="Notifications panel">
+    <div class="drawer-header">
+      <h3 style="font-size:1.1rem; font-weight:700;">Notifications</h3>
+      <button class="btn-close" onclick="toggleNotifications()">&times;</button>
+    </div>
+    <div class="drawer-body" id="notif-drawer-body">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- ==========================================================================
+       FRONTEND LOGIC (Vanilla ES6, Zero External Frameworks)
+       ========================================================================== -->
+  <script>
+    // State management
+    const state = {
+      currentUser: null,
+      selectedZone: 'all',
+      reportType: 'all',
+      searchQuery: '',
+      items: [],
+      zones: [],
+      currentClaimItemUuid: null,
+      searchTimeout: null
+    };
+
+    // Initialize application
+    document.addEventListener("DOMContentLoaded", () => {
+      // Set today's date in form default
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById("form-date");
+      if (dateInput) dateInput.value = today;
+
+      // Urgency reason toggle
+      const urgentCheck = document.getElementById("form-urgent");
+      const reasonInput = document.getElementById("form-urgent-reason");
+      if (urgentCheck && reasonInput) {
+        urgentCheck.addEventListener("change", (e) => {
+          reasonInput.style.display = e.target.checked ? "block" : "none";
+        });
+      }
+
+      // Initial data fetches
+      checkAuthStatus();
+      checkDbStatus();
+      loadCampusZones();
+      loadReports();
+      loadNotifications();
+    });
+
+    // -------------------------------------------------------------------------
+    // User Authentication & Session Management
+    // -------------------------------------------------------------------------
+    async function checkAuthStatus() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        state.currentUser = data.authenticated ? data.user : null;
+        updateAuthNav();
+      } catch (e) {
+        console.warn("Auth status check notice:", e);
+      }
+    }
+
+    function updateAuthNav() {
+      const container = document.getElementById('auth-nav-container');
+      const modBtn = document.getElementById('nav-btn-mod');
+      if (!container) return;
+
+      if (state.currentUser) {
+        const u = state.currentUser;
+        const roleIcon = u.role === 'moderator' ? '🛡️' : (u.role === 'admin' ? '🎓' : '👤');
+        container.innerHTML = `
+          <div style="display:inline-flex; align-items:center; gap:0.4rem; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); padding:0.25rem 0.6rem; border-radius:var(--radius-sm);">
+            <button onclick="openAuthModal('login')" style="background:none; border:none; color:#ffffff; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem;" title="Switch user or change profile">
+              <span>${roleIcon}</span> <span>${u.full_name}</span> <span style="font-size:0.7rem; opacity:0.85;">(${u.role})</span>
+            </button>
+            <button onclick="handleLogout()" style="background:rgba(0,0,0,0.25); border:none; color:#ffffff; border-radius:4px; font-size:0.7rem; padding:0.15rem 0.35rem; cursor:pointer;" title="Sign Out">
+              ✕
+            </button>
+          </div>
+        `;
+        if (modBtn) {
+          if (u.role === 'moderator' || u.role === 'admin') {
+            modBtn.style.borderColor = '#22c55e';
+            modBtn.style.background = 'rgba(34, 197, 94, 0.2)';
+          } else {
+            modBtn.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            modBtn.style.background = 'transparent';
+          }
+        }
+      } else {
+        container.innerHTML = `
+          <button class="btn btn-outline" onclick="openAuthModal('login')">
+            <span>🔑</span> Sign In
+          </button>
+        `;
+        if (modBtn) {
+          modBtn.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+          modBtn.style.background = 'transparent';
+        }
+      }
+    }
+
+    function openAuthModal(tab = 'login') {
+      switchAuthTab(tab);
+      openModal('auth-modal');
+    }
+
+    function switchAuthTab(tab) {
+      const loginTab = document.getElementById('auth-tab-login');
+      const regTab = document.getElementById('auth-tab-register');
+      const loginBtn = document.getElementById('tab-btn-login');
+      const regBtn = document.getElementById('tab-btn-register');
+
+      if (tab === 'login') {
+        loginTab.style.display = 'block';
+        regTab.style.display = 'none';
+        loginBtn.classList.add('active');
+        regBtn.classList.remove('active');
+        document.getElementById('modal-auth-title').textContent = 'Campus Member Sign In';
+      } else {
+        loginTab.style.display = 'none';
+        regTab.style.display = 'block';
+        loginBtn.classList.remove('active');
+        regBtn.classList.add('active');
+        document.getElementById('modal-auth-title').textContent = 'Create Student Account';
+      }
+    }
+
+    async function quickDemoLogin(username, password) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        state.currentUser = data.user;
+        updateAuthNav();
+        closeModal('auth-modal');
+        showToast(`Signed in as ${data.user.full_name} (${data.user.role})`, 'success');
+        loadNotifications();
+        if (document.getElementById('moderator-modal').classList.contains('open')) {
+          loadModeratorQueue();
+        }
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const uInput = document.getElementById('login-username').value.trim();
+      const pInput = document.getElementById('login-password').value.trim();
+      const submitBtn = document.getElementById('btn-login-submit');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Authenticating...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: uInput, password: pInput })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Sign in failed');
+
+        state.currentUser = data.user;
+        updateAuthNav();
+        closeModal('auth-modal');
+        document.getElementById('login-form').reset();
+        showToast(data.message, 'success');
+        loadNotifications();
+        if (document.getElementById('moderator-modal').classList.contains('open')) {
+          loadModeratorQueue();
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In to CAMPUS-FIND';
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        full_name: document.getElementById('reg-fullname').value.trim(),
+        username: document.getElementById('reg-username').value.trim(),
+        department: document.getElementById('reg-dept').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value.trim(),
+        phone: document.getElementById('reg-phone').value.trim()
+      };
+      const submitBtn = document.getElementById('btn-reg-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating Account...';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        state.currentUser = data.user;
+        updateAuthNav();
+        closeModal('auth-modal');
+        document.getElementById('register-form').reset();
+        showToast(data.message, 'success');
+        checkDbStatus();
+        loadNotifications();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Student Account';
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        state.currentUser = null;
+        updateAuthNav();
+        showToast('You have signed out.', 'info');
+        loadNotifications();
+      } catch (e) {
+        showToast('Logout failed: ' + e, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Toast Notification Utility
+    // -------------------------------------------------------------------------
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ'}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // -------------------------------------------------------------------------
+    // Database Health Status
+    // -------------------------------------------------------------------------
+    async function checkDbStatus() {
+      try {
+        const res = await fetch('/api/db-status');
+        const data = await res.json();
+        
+        const mysqlPill = document.getElementById('mysql-pill');
+        const mongoPill = document.getElementById('mongo-pill');
+
+        if (data.databases && data.databases.mysql) {
+          const m = data.databases.mysql;
+          const isLive = m.engine.includes("Live");
+          mysqlPill.innerHTML = `
+            <span class="status-dot ${isLive ? 'active' : 'fallback'}"></span>
+            <span>${m.engine} (${m.counts.claims} claims, ${m.counts.handoffs} handoffs)</span>
+          `;
+        }
+
+        if (data.databases && data.databases.mongodb) {
+          const mg = data.databases.mongodb;
+          const isLive = mg.engine.includes("Live");
+          mongoPill.innerHTML = `
+            <span class="status-dot ${isLive ? 'active' : 'fallback'}"></span>
+            <span>${mg.engine} (${mg.item_count} items)</span>
+          `;
+        }
+      } catch (err) {
+        console.warn("DB status check notice:", err);
+      }
+    }
+
+    async function reseedDemoData() {
+      if (!confirm("Reset and re-seed sample lost and found data across MySQL & MongoDB?")) return;
+      try {
+        const res = await fetch('/api/demo/seed', { method: 'POST' });
+        const data = await res.json();
+        showToast(data.message, 'success');
+        checkDbStatus();
+        loadCampusZones();
+        loadReports();
+      } catch (e) {
+        showToast("Failed to re-seed: " + e, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Campus Zones & Location Map
+    // -------------------------------------------------------------------------
+    async function loadCampusZones() {
+      try {
+        const res = await fetch('/api/campus-zones');
+        const data = await res.json();
+        state.zones = data.zones || [];
+
+        const grid = document.getElementById('zone-grid');
+        grid.innerHTML = `
+          <div class="zone-card ${state.selectedZone === 'all' ? 'selected' : ''}" onclick="selectZone('all')">
+            <div class="zone-name">🌐 All Campus Zones</div>
+            <div class="zone-desc">Entire university campus grounds</div>
+            <div class="zone-counts">
+              <span style="color:#2563eb;">View All Reports</span>
+            </div>
+          </div>
+        `;
+
+        state.zones.forEach(z => {
+          const card = document.createElement('div');
+          card.className = `zone-card ${state.selectedZone === z.id ? 'selected' : ''}`;
+          card.onclick = () => selectZone(z.id);
+          card.innerHTML = `
+            <div class="zone-name">${z.icon} ${z.name}</div>
+            <div class="zone-desc">${z.description}</div>
+            <div class="zone-counts">
+              <span class="badge-lost-count">${z.lost_count} Lost</span> • 
+              <span class="badge-found-count">${z.found_count} Found</span>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        console.error("Error loading campus zones:", e);
+      }
+    }
+
+    function selectZone(zoneId) {
+      state.selectedZone = zoneId;
+      document.getElementById('active-zone-label').textContent = `Zone: ${zoneId === 'all' ? 'All Campus' : zoneId}`;
+      loadCampusZones();
+      loadReports();
+    }
+
+    // -------------------------------------------------------------------------
+    // Report Loading, Filtering & Rendering
+    // -------------------------------------------------------------------------
+    function setReportType(type) {
+      state.reportType = type;
+      ['all', 'lost', 'found'].forEach(t => {
+        const btn = document.getElementById(`btn-type-${t}`);
+        if (btn) btn.classList.toggle('active', t === type);
+      });
+      loadReports();
+    }
+
+    function handleSearchDebounce() {
+      clearTimeout(state.searchTimeout);
+      state.searchTimeout = setTimeout(() => {
+        loadReports();
+      }, 300);
+    }
+
+    async function loadReports() {
+      const search = document.getElementById('search-input').value.trim();
+      const category = document.getElementById('filter-category').value;
+      const status = document.getElementById('filter-status').value;
+      const urgentOnly = document.getElementById('filter-urgent').checked;
+
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (category && category !== 'all') params.append('category', category);
+      if (state.selectedZone && state.selectedZone !== 'all') params.append('campus_zone', state.selectedZone);
+      if (state.reportType && state.reportType !== 'all') params.append('report_type', state.reportType);
+      if (status && status !== 'all') params.append('status', status);
+      if (urgentOnly) params.append('urgent_only', 'true');
+
+      try {
+        const res = await fetch(`/api/items?${params.toString()}`);
+        const data = await res.json();
+        state.items = data.items || [];
+        renderReports(state.items);
+      } catch (err) {
+        showToast("Error loading items: " + err, 'error');
+      }
+    }
+
+    function renderReports(items) {
+      const grid = document.getElementById('items-grid');
+      const countLabel = document.getElementById('results-count');
+      countLabel.textContent = items.length;
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align:center; padding:3rem; background:#ffffff; border-radius:10px; border:1px solid #e2e8f0;">
+            <div style="font-size:2.5rem; margin-bottom:0.5rem;">🔍</div>
+            <h3 style="font-size:1.1rem; color:#1e293b;">No matching campus reports found</h3>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:0.25rem;">Try relaxing your search terms or zone filter, or submit a new report.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = items.map(item => {
+        const isLost = item.report_type === 'lost';
+        const isUrgent = item.urgency_info && item.urgency_info.is_urgent;
+        const color = item.nested_attributes?.color || '';
+        const brand = item.nested_attributes?.brand || '';
+        const zone = item.location?.campus_zone || 'General Campus';
+        const building = item.location?.building || '';
+        const date = item.dates?.incident_date || '';
+        const hasPhoto = item.photo_meta?.has_photo && item.photo_meta?.image_url;
+
+        return `
+          <article class="item-card" tabindex="0">
+            <div class="card-photo">
+              ${hasPhoto 
+                ? `<img src="${item.photo_meta.image_url}" alt="${item.title}" loading="lazy">`
+                : `<div class="card-photo-placeholder" aria-hidden="true">${isLost ? '🔎' : '📦'}</div>`
+              }
+              <span class="card-type-tag ${isLost ? 'tag-lost' : 'tag-found'}">${item.report_type}</span>
+              ${isUrgent ? `<span class="tag-urgent">⚡ URGENT</span>` : ''}
+            </div>
+
+            <div class="card-body">
+              <div class="card-category">${item.category}</div>
+              <h3 class="card-title">${item.title}</h3>
+              <p class="card-desc">${item.description}</p>
+
+              <div class="card-meta-list">
+                <div class="meta-item">
+                  <span>📍</span> <strong>${zone}</strong> — ${building}
+                </div>
+                ${(brand || color) ? `
+                  <div class="meta-item">
+                    <span>🏷️</span> ${[brand, color].filter(Boolean).join(' • ')}
+                  </div>
+                ` : ''}
+                <div class="meta-item">
+                  <span>📅</span> Incident Date: ${date}
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="status-badge badge-${item.status}">
+                ${item.status.replace('_', ' ')}
+              </span>
+              <div style="display:flex; gap:0.4rem;">
+                <button class="btn btn-outline-dark" style="font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="viewItemDetail('${item.item_uuid}')">
+                  View & Matches
+                </button>
+                ${item.report_type === 'found' && item.status !== 'returned' ? `
+                  <button class="btn btn-secondary" style="font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="openClaimModal('${item.item_uuid}', '${item.title.replace(/'/g, "\\'")}')">
+                    Claim Item
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // Item Details & AI Match View
+    // -------------------------------------------------------------------------
+    async function viewItemDetail(itemUuid) {
+      try {
+        const [detailRes, matchesRes] = await Promise.all([
+          fetch(`/api/items/${itemUuid}`),
+          fetch(`/api/items/${itemUuid}/matches`)
+        ]);
+
+        const detailData = await detailRes.json();
+        const matchesData = await matchesRes.json();
+        const item = detailData.item;
+        const matches = matchesData.matches || [];
+
+        const body = document.getElementById('modal-detail-body');
+        document.getElementById('modal-detail-title').textContent = `${item.title} (${item.report_type.toUpperCase()})`;
+
+        let matchesHtml = '';
+        if (matches.length > 0) {
+          matchesHtml = `
+            <div style="margin-top:1rem;">
+              <h4 style="font-size:0.95rem; font-weight:700; color:var(--accent-purple); display:flex; align-items:center; gap:0.4rem;">
+                <span>✨</span> AI-Suggested Possible Matches (${matches.length})
+              </h4>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">
+                Matched using transparent local NLP (category, text similarity, location proximity, and incident dates).
+              </p>
+              ${matches.map(m => `
+                <div class="match-card">
+                  <div class="match-header">
+                    <strong>${m.candidate.title} (${m.candidate.report_type.toUpperCase()})</strong>
+                    <span class="confidence-pill">${m.confidence_percent}% Match</span>
+                  </div>
+                  <div class="match-explanation">
+                    <strong>Reason:</strong> ${m.explanation}
+                  </div>
+                  <div style="font-size:0.75rem; color:#6b21a8; margin-top:0.25rem;">
+                    Location: ${m.candidate.location?.campus_zone} (${m.candidate.location?.building}) • Status: ${m.candidate.status}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          matchesHtml = `
+            <div style="margin-top:1rem; padding:0.75rem; background:#f8fafc; border-radius:6px; font-size:0.8rem; color:#64748b;">
+              ✨ No automatic match suggestions found yet. As more campus reports arrive, the matching engine will evaluate similarities.
+            </div>
+          `;
+        }
+
+        body.innerHTML = `
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+              <div>
+                <span class="status-badge badge-${item.status}">${item.status.replace('_', ' ')}</span>
+                <span style="font-size:0.8rem; color:var(--text-muted); margin-left:0.5rem;">UUID: ${item.item_uuid}</span>
+              </div>
+              ${item.urgency_info?.is_urgent ? `<span class="tag-urgent">⚡ ${item.urgency_info.urgency_reason || 'Urgent'}</span>` : ''}
+            </div>
+
+            <p style="margin-top:0.75rem; font-size:0.95rem; color:#334155;">${item.description}</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; background:#f8fafc; padding:0.75rem; border-radius:6px; font-size:0.85rem;">
+              <div><strong>Zone:</strong> ${item.location?.campus_zone}</div>
+              <div><strong>Building:</strong> ${item.location?.building}</div>
+              <div><strong>Floor/Area:</strong> ${item.location?.floor} ${item.location?.room_or_area || ''}</div>
+              <div><strong>Incident Date:</strong> ${item.dates?.incident_date}</div>
+              <div><strong>Color:</strong> ${item.nested_attributes?.color || 'N/A'}</div>
+              <div><strong>Brand:</strong> ${item.nested_attributes?.brand || 'N/A'}</div>
+            </div>
+
+            ${item.private_secret_hint ? `
+              <div style="margin-top:0.75rem; font-size:0.8rem; color:#b45309; background:#fffbeb; padding:0.5rem 0.75rem; border-radius:6px;">
+                <strong>Claim Hint:</strong> "${item.private_secret_hint}"
+              </div>
+            ` : ''}
+
+            ${matchesHtml}
+
+            <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+              <button class="btn btn-outline-dark" onclick="closeModal('detail-modal')">Close</button>
+              ${item.report_type === 'found' && item.status !== 'returned' ? `
+                <button class="btn btn-secondary" onclick="closeModal('detail-modal'); openClaimModal('${item.item_uuid}', '${item.title.replace(/'/g, "\\'")}')">
+                  Claim This Item
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+
+        openModal('detail-modal');
+      } catch (err) {
+        showToast("Failed to load details: " + err, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Report Submission Flow
+    // -------------------------------------------------------------------------
+    function openReportModal(type) {
+      document.getElementById('report-form-type').value = type;
+      document.getElementById('modal-report-title').textContent = type === 'lost' 
+        ? "Report a Lost Belonging" 
+        : "Report a Found Item on Campus";
+      document.getElementById('btn-submit-report').textContent = type === 'lost' 
+        ? "Publish Lost Report" 
+        : "Publish Found Report";
+      openModal('report-modal');
+    }
+
+    async function handleReportSubmit(e) {
+      e.preventDefault();
+      const reportType = document.getElementById('report-form-type').value;
+
+      const payload = {
+        title: document.getElementById('form-title').value.trim(),
+        report_type: reportType,
+        category: document.getElementById('form-category').value,
+        color: document.getElementById('form-color').value.trim(),
+        brand: document.getElementById('form-brand').value.trim(),
+        campus_zone: document.getElementById('form-zone').value,
+        building: document.getElementById('form-building').value.trim(),
+        incident_date: document.getElementById('form-date').value,
+        image_url: document.getElementById('form-image').value.trim(),
+        description: document.getElementById('form-desc').value.trim(),
+        distinguishing_mark: document.getElementById('form-secret').value.trim(),
+        is_urgent: document.getElementById('form-urgent').checked,
+        urgency_reason: document.getElementById('form-urgent-reason').value.trim(),
+        private_secret_hint: "Describe distinguishing sticker, scratch, or lockscreen",
+        reporter_uuid: state.currentUser ? state.currentUser.user_uuid : "usr-student-001",
+        reporter_name: state.currentUser ? state.currentUser.full_name : "Maya Lin"
+      };
+
+      try {
+        const res = await fetch('/api/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Submission failed');
+        }
+
+        closeModal('report-modal');
+        document.getElementById('report-form').reset();
+
+        // Check if duplicate warning was triggered
+        if (data.workflow && data.workflow.duplicate_warning && data.workflow.duplicate_warning.is_duplicate_warning) {
+          showToast(data.workflow.duplicate_warning.message, 'warning');
+        } else {
+          showToast(data.message, 'success');
+        }
+
+        // Reload data
+        loadReports();
+        loadCampusZones();
+        checkDbStatus();
+
+        // If high match was discovered immediately, notify user
+        if (data.workflow && data.workflow.top_match) {
+          setTimeout(() => {
+            showToast(`✨ Promising match found: "${data.workflow.top_match.candidate.title}" (${data.workflow.top_match.confidence_percent}%)`, 'info');
+          }, 1000);
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Private Claim Submission Flow
+    // -------------------------------------------------------------------------
+    function openClaimModal(itemUuid, itemTitle) {
+      state.currentClaimItemUuid = itemUuid;
+      document.getElementById('claim-item-uuid').value = itemUuid;
+      document.getElementById('claim-item-context').textContent = `Submitting ownership claim for: "${itemTitle}"`;
+      document.getElementById('claim-secret-input').value = '';
+      openModal('claim-modal');
+    }
+
+    async function submitClaim() {
+      const itemUuid = document.getElementById('claim-item-uuid').value;
+      const secretText = document.getElementById('claim-secret-input').value.trim();
+
+      if (!secretText) {
+        showToast("Please provide your private identifying detail to verify ownership.", 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/claims', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            item_uuid: itemUuid,
+            claimant_id: state.currentUser ? state.currentUser.id : 1,
+            private_verification_text: secretText
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to submit claim');
+
+        closeModal('claim-modal');
+        showToast(data.message, 'success');
+        checkDbStatus();
+        loadNotifications();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Moderator Review & MySQL Multi-Row Transaction Demonstration
+    // -------------------------------------------------------------------------
+    async function openModeratorModal() {
+      openModal('moderator-modal');
+      await loadModeratorQueue();
+      await loadAgingReports();
+    }
+
+    async function loadModeratorQueue() {
+      const container = document.getElementById('mod-claims-container');
+      container.innerHTML = `<p style="font-size:0.85rem; color:#64748b;">Loading claims via MySQL JOIN...</p>`;
+
+      try {
+        const res = await fetch('/api/claims');
+        const data = await res.json();
+        const claims = data.claims || [];
+
+        const isMod = state.currentUser && (state.currentUser.role === 'moderator' || state.currentUser.role === 'admin');
+        const roleBanner = (!isMod && state.currentUser) ? `
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:0.6rem 0.8rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <span style="font-size:0.8rem; color:#92400e;">
+              Signed in as <strong>${state.currentUser.full_name} (${state.currentUser.role})</strong>. To test moderator approval & handoff tokens:
+            </span>
+            <button class="btn btn-secondary" style="font-size:0.75rem; padding:0.25rem 0.6rem;" onclick="quickDemoLogin('sarah_safety', 'demo123')">
+              Switch to Officer Sarah (Moderator)
+            </button>
+          </div>
+        ` : '';
+
+        if (claims.length === 0) {
+          container.innerHTML = `${roleBanner}<p style="font-size:0.85rem; color:#64748b;">No claims in review queue.</p>`;
+          return;
+        }
+
+        container.innerHTML = `
+          ${roleBanner}
+          <table class="claims-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Item Snapshot</th>
+                <th>Claimant (User JOIN)</th>
+                <th>Status</th>
+                <th>Private Detail (Confidential)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${claims.map(c => `
+                <tr>
+                  <td><strong>#${c.claim_id}</strong></td>
+                  <td>
+                    <strong>${c.snapshot_item_title}</strong><br>
+                    <span style="font-size:0.75rem; color:#64748b;">${c.snapshot_location_zone} (${c.snapshot_report_type})</span>
+                  </td>
+                  <td>
+                    ${c.claimant_name}<br>
+                    <span style="font-size:0.75rem; color:#64748b;">${c.claimant_email} • ${c.claimant_department}</span>
+                  </td>
+                  <td>
+                    <span class="status-badge badge-${c.claim_status}">${c.claim_status}</span>
+                    ${c.handoff_code ? `<br><code style="font-size:0.75rem; color:#15803d; font-weight:700;">${c.handoff_code}</code>` : ''}
+                  </td>
+                  <td style="max-width:200px; font-size:0.8rem; background:#fffbeb;">
+                    ${c.private_verification_text}
+                  </td>
+                  <td>
+                    ${c.claim_status === 'pending_review' ? `
+                      <button class="btn btn-secondary" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="reviewClaimAction(${c.claim_id}, 'approve')">
+                        Approve (Tx)
+                      </button>
+                      <button class="btn btn-outline-dark" style="font-size:0.7rem; padding:0.25rem 0.5rem; margin-top:0.2rem;" onclick="reviewClaimAction(${c.claim_id}, 'reject')">
+                        Reject
+                      </button>
+                    ` : `
+                      <span style="font-size:0.75rem; color:#64748b;">Reviewed</span>
+                    `}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (e) {
+        container.innerHTML = `<p style="color:#dc2626;">Error loading claims queue: ${e}</p>`;
+      }
+    }
+
+    async function reviewClaimAction(claimId, action) {
+      const confirmMsg = action === 'approve'
+        ? "Approve this claim? This triggers an atomic MySQL transaction that updates claim status, generates a safe one-time handoff token, logs a student notification, and marks MongoDB item as claimed."
+        : "Reject this claim?";
+
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        const res = await fetch(`/api/claims/${claimId}/review`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: action,
+            notes: "Verified by campus safety officer against distinguishing mark."
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Review failed');
+
+        showToast(data.message, 'success');
+        if (data.result && data.result.handoff_code) {
+          showToast(`Generated Handoff Token: ${data.result.handoff_code}`, 'info');
+        }
+
+        loadModeratorQueue();
+        checkDbStatus();
+        loadReports();
+        loadNotifications();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function verifyDeskHandoff() {
+      const codeInput = document.getElementById('verify-token-input');
+      const code = codeInput.value.trim();
+      if (!code) {
+        showToast("Please enter a handoff token (e.g. CF-7A9B2C)", 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/handoffs/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ handoff_code: code })
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+        showToast(data.message, 'success');
+        codeInput.value = '';
+        loadModeratorQueue();
+        loadReports();
+        checkDbStatus();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function loadAgingReports() {
+      const container = document.getElementById('aging-reports-container');
+      try {
+        const res = await fetch('/api/unclaimed-aging');
+        const data = await res.json();
+        const items = data.items || [];
+
+        if (items.length === 0) {
+          container.innerHTML = `<p style="font-size:0.8rem; color:#64748b;">No items exceeding the 30-day aging disposition threshold.</p>`;
+          return;
+        }
+
+        container.innerHTML = `
+          <div style="background:#fff7ed; border:1px solid #fed7aa; padding:0.75rem; border-radius:6px;">
+            <p style="color:#9a3412; font-weight:600; font-size:0.8rem; margin-bottom:0.35rem;">
+              Campus Policy Notice: ${data.policy_note}
+            </p>
+            <ul style="padding-left:1.25rem; font-size:0.8rem; color:#7c2d12;">
+              ${items.map(it => `
+                <li><strong>${it.title}</strong> (${it.location?.campus_zone}) — Reported: ${it.dates?.incident_date}</li>
+              `).join('')}
+            </ul>
+          </div>
+        `;
+      } catch (e) {
+        console.warn("Aging reports notice:", e);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Student Notifications Drawer
+    // -------------------------------------------------------------------------
+    async function loadNotifications() {
+      try {
+        const uid = state.currentUser ? state.currentUser.id : 1;
+        const res = await fetch(`/api/notifications?user_id=${uid}`);
+        const data = await res.json();
+        const notifs = data.notifications || [];
+        const unreadCount = data.unread_count || 0;
+
+        const badge = document.getElementById('notif-badge-count');
+        if (badge) {
+          badge.textContent = unreadCount;
+          badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+        }
+
+        const body = document.getElementById('notif-drawer-body');
+        if (notifs.length === 0) {
+          body.innerHTML = `<p style="color:#64748b; font-size:0.85rem; text-align:center; padding:2rem 0;">No notifications yet.</p>`;
+          return;
+        }
+
+        body.innerHTML = notifs.map(n => `
+          <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markNotifRead(${n.id})">
+            <div class="notif-title">${n.title}</div>
+            <div style="color:#475569;">${n.message}</div>
+            <div class="notif-time">${new Date(n.created_at).toLocaleString()}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.warn("Notifications notice:", e);
+      }
+    }
+
+    async function markNotifRead(id) {
+      try {
+        await fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+        loadNotifications();
+      } catch (e) {}
+    }
+
+    function toggleNotifications() {
+      const drawer = document.getElementById('notif-drawer');
+      drawer.classList.toggle('open');
+      if (drawer.classList.contains('open')) {
+        loadNotifications();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Modal Helpers
+    // -------------------------------------------------------------------------
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('open');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('open');
+    }
+
+    function openPrivacyInfo() {
+      openModal('privacy-modal');
+    }
+
+    // Close modals on Escape key or outside click
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+        document.getElementById('notif-drawer').classList.remove('open');
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

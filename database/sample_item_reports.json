@@ -1,0 +1,322 @@
+[
+  {
+    "item_uuid": "cf-item-001",
+    "report_type": "found",
+    "title": "Space Gray iPad Air 5th Gen",
+    "category": "Electronics",
+    "status": "claimed",
+    "description": "Found on a wooden study cubicle table near the back windows. Screen has tempered glass protector with a minor corner bubble.",
+    "nested_attributes": {
+      "color": "Space Gray",
+      "brand": "Apple",
+      "model": "iPad Air (5th Generation)",
+      "distinguishing_mark": "Scratch shaped like letter V near charging port",
+      "condition": "Good"
+    },
+    "location": {
+      "campus_zone": "Central Library",
+      "building": "Main Campus Library",
+      "floor": "3rd Floor",
+      "room_or_area": "North Study Stacks Table #14"
+    },
+    "urgency_info": {
+      "is_urgent": false,
+      "urgency_reason": "Secured in Central Library Safe",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-10",
+      "reported_at": "2026-11-10T14:30:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-002",
+      "display_name": "Alex Chen",
+      "role": "student"
+    },
+    "private_secret_hint": "Please name the wallpaper image or the unique mark near the port.",
+    "photo_meta": {
+      "has_photo": true,
+      "image_url": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "item_uuid": "cf-item-002",
+    "report_type": "lost",
+    "title": "Apple iPad Air Space Gray with Stylus",
+    "category": "Electronics",
+    "status": "possible_match",
+    "description": "Lost my tablet during midterm study session around 2:00 PM. Space gray with dark magnetic cover.",
+    "nested_attributes": {
+      "color": "Space Gray",
+      "brand": "Apple",
+      "model": "iPad Air",
+      "distinguishing_mark": "Small V scratch on bottom aluminum rim",
+      "condition": "Excellent"
+    },
+    "location": {
+      "campus_zone": "Central Library",
+      "building": "Main Campus Library",
+      "floor": "3rd Floor",
+      "room_or_area": "Quiet carrels near literature section"
+    },
+    "urgency_info": {
+      "is_urgent": true,
+      "urgency_reason": "Contains research papers for senior thesis",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-10",
+      "reported_at": "2026-11-10T17:15:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-001",
+      "display_name": "Maya Lin",
+      "role": "student"
+    },
+    "private_secret_hint": "Specify exact lockscreen photo and any rim scratches.",
+    "photo_meta": {
+      "has_photo": false,
+      "image_url": ""
+    }
+  },
+  {
+    "item_uuid": "cf-item-003",
+    "report_type": "found",
+    "title": "Dorm Room Brass Keys with Lanyard",
+    "category": "Keys & Bags",
+    "status": "possible_match",
+    "description": "Found on the laundry room folding counter. Set of three keys on a braided red and black cord.",
+    "nested_attributes": {
+      "color": "Red and Black",
+      "brand": "Schlage",
+      "model": "Dorm Key Set",
+      "distinguishing_mark": "Red silicone tag with athletic team logo",
+      "condition": "Used"
+    },
+    "location": {
+      "campus_zone": "South Residence",
+      "building": "Birch Hall Residence",
+      "floor": "Basement",
+      "room_or_area": "Laundry Facility Room B-08"
+    },
+    "urgency_info": {
+      "is_urgent": true,
+      "urgency_reason": "Student is likely locked out of dorm room",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-11",
+      "reported_at": "2026-11-11T09:45:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-mod-001",
+      "display_name": "Officer Sarah Jenkins",
+      "role": "moderator"
+    },
+    "private_secret_hint": "What is printed on the red silicone tag?",
+    "photo_meta": {
+      "has_photo": true,
+      "image_url": "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "item_uuid": "cf-item-004",
+    "report_type": "lost",
+    "title": "Dorm Room Keys on Red Silicone Cord",
+    "category": "Keys & Bags",
+    "status": "possible_match",
+    "description": "Left my dorm keys near the laundry machines while unloading detergent. Cannot enter my room.",
+    "nested_attributes": {
+      "color": "Red / Brass",
+      "brand": "Schlage",
+      "model": "Dorm Standard",
+      "distinguishing_mark": "High school track and field logo on tag",
+      "condition": "Fair"
+    },
+    "location": {
+      "campus_zone": "South Residence",
+      "building": "Birch Hall Residence",
+      "floor": "Ground / Basement",
+      "room_or_area": "Common Washers Area"
+    },
+    "urgency_info": {
+      "is_urgent": true,
+      "urgency_reason": "Locked out of room before morning lecture",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-11",
+      "reported_at": "2026-11-11T10:10:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-002",
+      "display_name": "Alex Chen",
+      "role": "student"
+    },
+    "private_secret_hint": "Name the team name or year on the fob.",
+    "photo_meta": {
+      "has_photo": false,
+      "image_url": ""
+    }
+  },
+  {
+    "item_uuid": "cf-item-005",
+    "report_type": "lost",
+    "title": "Prescription Reading Glasses in Tortoiseshell",
+    "category": "Valuables",
+    "status": "open",
+    "description": "Brown and amber tortoiseshell frame glasses. Cannot read the whiteboard or computer screen without them!",
+    "nested_attributes": {
+      "color": "Tortoiseshell Brown",
+      "brand": "Warby Parker",
+      "model": "Percey Narrow",
+      "distinguishing_mark": "Tiny dot engraving on inner right arm: 'M.L.'",
+      "condition": "Very Good"
+    },
+    "location": {
+      "campus_zone": "Science Complex",
+      "building": "Chemistry & Biology Hall",
+      "floor": "2nd Floor",
+      "room_or_area": "Lecture Hall 204"
+    },
+    "urgency_info": {
+      "is_urgent": true,
+      "urgency_reason": "Student has organic chemistry exam at 4 PM",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-12",
+      "reported_at": "2026-11-12T08:15:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-001",
+      "display_name": "Maya Lin",
+      "role": "student"
+    },
+    "private_secret_hint": "What two letters are etched on the inner right arm?",
+    "photo_meta": {
+      "has_photo": true,
+      "image_url": "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "item_uuid": "cf-item-006",
+    "report_type": "found",
+    "title": "Hydro Flask 32oz Insulated Water Bottle",
+    "category": "Other",
+    "status": "open",
+    "description": "Mustard yellow wide-mouth flask left on the bleachers near basketball court 2.",
+    "nested_attributes": {
+      "color": "Mustard Yellow",
+      "brand": "Hydro Flask",
+      "model": "32oz Wide Mouth",
+      "distinguishing_mark": "Sticker of Yosemite National Park Half Dome",
+      "condition": "Minor dent on bottom rim"
+    },
+    "location": {
+      "campus_zone": "Sports Arena",
+      "building": "Recreation & Athletics Center",
+      "floor": "Court Level",
+      "room_or_area": "Court 2 Bleachers Row 3"
+    },
+    "urgency_info": {
+      "is_urgent": false,
+      "urgency_reason": "",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-11",
+      "reported_at": "2026-11-11T18:30:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-002",
+      "display_name": "Alex Chen",
+      "role": "student"
+    },
+    "private_secret_hint": "What national park or mountain is pictured on the sticker?",
+    "photo_meta": {
+      "has_photo": true,
+      "image_url": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "item_uuid": "cf-item-007",
+    "report_type": "lost",
+    "title": "Canvas Tote Bag with Organic Chemistry Textbook",
+    "category": "Books & Notes",
+    "status": "open",
+    "description": "Natural cotton canvas tote with green botanical print. Inside is Wade Organic Chemistry 9th Edition and spiral notebook.",
+    "nested_attributes": {
+      "color": "Cream / Green",
+      "brand": "EcoCanvas",
+      "model": "Standard Tote",
+      "distinguishing_mark": "Handwritten name inside notebook cover",
+      "condition": "Well-loved"
+    },
+    "location": {
+      "campus_zone": "North Quad",
+      "building": "Humanities Pavilion",
+      "floor": "1st Floor",
+      "room_or_area": "Courtyard stone benches"
+    },
+    "urgency_info": {
+      "is_urgent": false,
+      "urgency_reason": "Contains class notes for upcoming final",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-09",
+      "reported_at": "2026-11-09T16:00:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-student-001",
+      "display_name": "Maya Lin",
+      "role": "student"
+    },
+    "private_secret_hint": "What is written on the first page of the spiral notebook?",
+    "photo_meta": {
+      "has_photo": false,
+      "image_url": ""
+    }
+  },
+  {
+    "item_uuid": "cf-item-008",
+    "report_type": "found",
+    "title": "Black Leather Trifold Wallet",
+    "category": "Wallets & IDs",
+    "status": "open",
+    "description": "Found near register 3 in the student union cafeteria. Turned into the supervisor station.",
+    "nested_attributes": {
+      "color": "Black",
+      "brand": "Fossil",
+      "model": "Ingram Trifold",
+      "distinguishing_mark": "Subway transit pass tucked in rear exterior slot",
+      "condition": "Good"
+    },
+    "location": {
+      "campus_zone": "Student Center",
+      "building": "Campus Union & Dining Commons",
+      "floor": "1st Floor",
+      "room_or_area": "Food Court Register #3"
+    },
+    "urgency_info": {
+      "is_urgent": true,
+      "urgency_reason": "Contains student identity card and meal pass",
+      "is_perishable": false
+    },
+    "dates": {
+      "incident_date": "2026-11-12",
+      "reported_at": "2026-11-12T11:20:00Z"
+    },
+    "reporter": {
+      "user_uuid": "usr-mod-001",
+      "display_name": "Officer Sarah Jenkins",
+      "role": "moderator"
+    },
+    "private_secret_hint": "What card is visible in the rear exterior slot?",
+    "photo_meta": {
+      "has_photo": true,
+      "image_url": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&auto=format&fit=crop&q=80"
+    }
+  }
+]
